@@ -1,13 +1,8 @@
 package com.example.android.bluetoothtest.remote.bluetooth.library
 
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.example.android.bluetoothtest.BluetoothActionsInterface
-import com.example.android.bluetoothtest.TAG
 import com.polidea.rxandroidble2.scan.ScanSettings
 import com.polidea.rxandroidble2.RxBleClient
 import io.reactivex.disposables.Disposable

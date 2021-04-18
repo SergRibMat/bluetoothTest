@@ -1,8 +1,9 @@
-package com.example.android.bluetoothtest
+package com.example.android.bluetoothtest.mainactivity.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.android.bluetoothtest.BTDevice
 
 class MainActivityVM : ViewModel(){
 

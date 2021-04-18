@@ -1,43 +1,24 @@
-package com.example.android.bluetoothtest
+package com.example.android.bluetoothtest.mainactivity.ui
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothHeadset
 import android.content.*
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProviders
+import com.example.android.bluetoothtest.*
 import com.example.android.bluetoothtest.databinding.ActivityMainBinding
+import com.example.android.bluetoothtest.mainactivity.vm.MainActivityVM
 import com.example.android.bluetoothtest.utils.askForPermissionWithDexter
 import com.example.android.bluetoothtest.utils.checkPermission
 import com.example.android.bluetoothtest.utils.showMessage
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import com.polidea.rxandroidble2.RxBleDevice
 
 
-const val MY_TAG: String = "MainActivity"
 val TAG = "MY_APP_DEBUG_TAG"
-const val MESSAGE_READ: Int = 0
-const val MESSAGE_WRITE: Int = 1
-const val MESSAGE_TOAST: Int = 2
-
-
-
-//After you have found a device to connect to, use cancelDiscovery()
-//do not perform discovery while you are already connected to a device
-
 
 class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInterface {
 

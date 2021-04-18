@@ -7,15 +7,15 @@ import android.util.Log
 import com.example.android.bluetoothtest.utils.showMessage
 import com.polidea.rxandroidble2.RxBleDevice
 
-class BLENative(private val bluetoothActionsInterface: BluetoothActionsInterface) : BaseBLE() {
+class BLENative(private val bluetoothActionsInterface: BluetoothActionsInterface) {
 
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-    override fun turnOff() {
+    fun turnOff() {
         bluetoothAdapter.disable()
     }
 
-    override fun turnOn() {
+    fun turnOn() {
         bluetoothActionsInterface.activateBluetooth()
     }
 
