@@ -2,8 +2,10 @@ package com.example.android.bluetoothtest
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.util.Log
 import com.example.android.bluetoothtest.utils.showMessage
+import com.polidea.rxandroidble2.RxBleDevice
 
 class BLENative(private val bluetoothActionsInterface: BluetoothActionsInterface) : BaseBLE() {
 
@@ -42,8 +44,8 @@ class BLENative(private val bluetoothActionsInterface: BluetoothActionsInterface
     }
 
     private fun permissionsForDiscoveryGranted(): Boolean{
-        return  (bluetoothActionsInterface.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                && bluetoothActionsInterface.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)        )
+        return  (bluetoothActionsInterface.checkPermissionMainActivity(Manifest.permission.ACCESS_FINE_LOCATION)
+                && bluetoothActionsInterface.checkPermissionMainActivity(Manifest.permission.ACCESS_FINE_LOCATION)        )
     }
 
     fun bluetoothEnabled(): Boolean{
@@ -57,8 +59,10 @@ class BLENative(private val bluetoothActionsInterface: BluetoothActionsInterface
 
 interface BluetoothActionsInterface{
     fun activateBluetooth()
-    fun checkPermission(permission: String): Boolean
+    fun checkPermissionMainActivity(permission: String): Boolean
     fun actionRequestDiscoverable()
+    fun addDeviceToViewModelSet(device: BluetoothDevice?)
+    fun addDeviceToViewModelSet(device: RxBleDevice?)
 }
 
 

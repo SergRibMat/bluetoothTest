@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProviders
 import com.example.android.bluetoothtest.databinding.ActivityMainBinding
+import com.example.android.bluetoothtest.utils.askForPermissionWithDexter
+import com.example.android.bluetoothtest.utils.checkPermission
 import com.example.android.bluetoothtest.utils.showMessage
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
@@ -22,6 +24,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import com.polidea.rxandroidble2.RxBleDevice
 
 
 const val MY_TAG: String = "MainActivity"
@@ -49,7 +52,16 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
         val binding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        withDexter()
+        askForPermissionWithDexter(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                "Fine Location")
+
+
+        askForPermissionWithDexter(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                "Coarse Location")
 
         viewModel = ViewModelProviders.of(this).get(MainActivityVM::class.java)
 
@@ -91,79 +103,6 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
             binding.rvDeviceList.adapter = adapter
         })
     }
-
-    fun withDexter(){
-
-            Dexter.withContext(this)
-                .withPermission(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                        showMessage(applicationContext, "Permission granted")
-                    }
-
-                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                        showMessage(applicationContext,"Permission denied")
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(p0: PermissionRequest?, token: PermissionToken?) {
-                        showMessage(applicationContext,"onPermissionRationaleShouldBeShown")
-
-                        AlertDialog.Builder(this@MainActivity)
-                            .setTitle("Give Permission Internet")
-                            .setMessage("You need to give permission internet for this app")
-                            .setNegativeButton(android.R.string.cancel, DialogInterface.OnClickListener {
-                                    dialogInterface, i ->
-                                dialogInterface.dismiss()
-                                token?.cancelPermissionRequest()
-                            })
-                            .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener {
-                                    dialogInterface, i ->
-                                dialogInterface.dismiss()
-                                token?.continuePermissionRequest()
-                            })
-                            .show()
-                    }
-
-                })
-                .check()
-
-        Dexter.withContext(this)
-            .withPermission(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    showMessage(applicationContext, "Permission granted")
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    showMessage(applicationContext,"Permission denied")
-                }
-
-                override fun onPermissionRationaleShouldBeShown(p0: PermissionRequest?, token: PermissionToken?) {
-                    showMessage(applicationContext,"onPermissionRationaleShouldBeShown")
-
-                    AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Give Permission Internet")
-                        .setMessage("You need to give permission internet for this app")
-                        .setNegativeButton(android.R.string.cancel, DialogInterface.OnClickListener {
-                                dialogInterface, i ->
-                            dialogInterface.dismiss()
-                            token?.cancelPermissionRequest()
-                        })
-                        .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener {
-                                dialogInterface, i ->
-                            dialogInterface.dismiss()
-                            token?.continuePermissionRequest()
-                        })
-                        .show()
-                }
-
-            })
-            .check()
-        }
 
 
 
@@ -215,11 +154,8 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
         showMessage(this, "${btDevice.name}, ${btDevice.address}")
     }
 
-    override fun checkPermission(permission: String): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            this,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
+    override fun checkPermissionMainActivity(permission: String): Boolean {
+        return checkPermission(this, permission)
     }
 
     // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
@@ -297,14 +233,28 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
             if (action == BluetoothDevice.ACTION_FOUND) {
                 val device =
                         intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                val name = device?.name ?: "No Name Available"
-                val address = device?.address ?: "No Address Available"
-                Log.d(TAG, "onReceive: $name $address")
-                viewModel.addToBTDeviceList(
-                        setOf(BTDevice(name, address))
-                )
+                addDeviceToViewModelSet(device)
             }
         }
+    }
+
+    override fun addDeviceToViewModelSet(device: BluetoothDevice?){
+        val name = device?.name ?: "No Name Available"
+        val address = device?.address ?: "No Address Available"
+        setParametersAndAddToViewModel(name, address)
+    }
+
+    override fun addDeviceToViewModelSet(device: RxBleDevice?){
+        val name = device?.name ?: "No Name Available"
+        val address = device?.macAddress ?: "No Address Available"
+        setParametersAndAddToViewModel(name, address)
+    }
+
+    fun setParametersAndAddToViewModel(name: String, address: String){
+        Log.d(TAG, "onReceive: $name $address")
+        viewModel.addToBTDeviceList(
+                setOf(BTDevice(name, address))
+        )
     }
 
     override fun activateBluetooth(){
