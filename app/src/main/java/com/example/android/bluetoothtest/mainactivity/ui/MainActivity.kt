@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothHeadset
 import android.content.*
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.example.android.bluetoothtest.*
@@ -23,6 +24,7 @@ val TAG = "MY_APP_DEBUG_TAG"
 class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInterface {
 
     private lateinit var viewModel: MainActivityVM
+    lateinit var binding: ActivityMainBinding
 
     var bluetoothHeadset: BluetoothHeadset? = null
     // Get the default adapter
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         askForPermissionWithDexter(
@@ -57,16 +59,7 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
             }
         }
 
-        binding.btnCheckBluetooth.setOnClickListener {
-            checkIfBluetoothEnabled()
-        }
-
-        binding.btnDiscoverable.setOnClickListener {
-            bleNative.makeDeviceDiscoverable()
-        }
-        binding.btnDiscover.setOnClickListener {
-            bleNative.discoveryDevices()
-        }
+        setBottomNavigationListeners()
 
         // Register for broadcasts
         val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
@@ -84,6 +77,35 @@ class MainActivity : AppCompatActivity(), CellClickListener, BluetoothActionsInt
             binding.rvDeviceList.adapter = adapter
         })
     }
+
+    fun setBottomNavigationListeners(){
+        binding.bottomNavigation.setOnNavigationItemSelectedListener {item ->
+            actionsToBottomNavigationButtons(item)
+        }
+
+        //detecting when navigation items have been reselected:
+        binding.bottomNavigation.setOnNavigationItemReselectedListener { item ->
+                actionsToBottomNavigationButtons(item)
+        }
+    }
+
+    private fun actionsToBottomNavigationButtons(item: MenuItem): Boolean =
+        when(item.itemId) {
+            R.id.menu_check_if_available -> {
+                checkIfBluetoothEnabled()
+                true
+            }
+            R.id.menu_discover -> {
+                bleNative.discoveryDevices()
+                true
+            }
+            R.id.menu_discoverable -> {
+                bleNative.makeDeviceDiscoverable()
+                true
+            }
+            else -> false
+        }
+
 
 
 

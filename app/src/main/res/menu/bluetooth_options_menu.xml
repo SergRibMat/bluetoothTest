@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_check_if_available"
+        android:enabled="true"
+        android:title="Check Bluetooth"/>
+    <item
+        android:id="@+id/menu_discoverable"
+        android:enabled="true"
+        android:title="Discoverable"/>
+
+    <item
+        android:id="@+id/menu_discover"
+        android:enabled="true"
+        android:title="Discover"/>
+</menu>
